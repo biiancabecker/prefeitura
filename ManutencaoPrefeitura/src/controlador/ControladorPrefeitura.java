@@ -10,6 +10,12 @@ import dao.DaoPrefeitura;
 import javax.swing.JOptionPane;
 import modelo.Prefeitura;
 import tela.manutencao.ManutencaoPrefeitura;
+
+import java.util.List;
+
+import java.util.Vector;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author bianc
@@ -25,6 +31,11 @@ public class ControladorPrefeitura {
         boolean resultado = DaoPrefeitura.inserir(objeto);
         if (resultado) {
             JOptionPane.showMessageDialog(null, "Inserido com sucesso!");
+            if (man.listagem != null) {
+     atualizarTabela(man.listagem.tabela); //atualizar a tabela da listagem
+}
+man.dispose();//fechar a tela da manutenção
+
         } else {
             JOptionPane.showMessageDialog(null, "Erro!");
         }
@@ -41,6 +52,11 @@ public class ControladorPrefeitura {
         boolean resultado = DaoPrefeitura.alterar(objeto);
         if (resultado) {
             JOptionPane.showMessageDialog(null, "Alterado com sucesso!");
+            if (man.listagem != null) {
+     atualizarTabela(man.listagem.tabela); //atualizar a tabela da listagem
+}
+man.dispose();//fechar a tela da manutenção
+
         } else {
             JOptionPane.showMessageDialog(null, "Erro!");
         }
@@ -53,9 +69,47 @@ public class ControladorPrefeitura {
         boolean resultado = DaoPrefeitura.excluir(objeto);
         if (resultado) {
             JOptionPane.showMessageDialog(null, "Excluído com sucesso!");
+            if (man.listagem != null) {
+     atualizarTabela(man.listagem.tabela); //atualizar a tabela da listagem
+}
+man.dispose();//fechar a tela da manutenção
+
         } else {
             JOptionPane.showMessageDialog(null, "Erro!");
         }
+    }
+    
+    public static void atualizarTabela(JTable tabela) {
+        DefaultTableModel modelo = new DefaultTableModel();
+        //definindo o cabeçalho da tabela
+        modelo.addColumn("Codigo");
+        modelo.addColumn("Funcionarios");
+        modelo.addColumn("Endereco");
+        modelo.addColumn("Nome");
+        List<Prefeitura> resultados = DaoPrefeitura.consultar();
+        for (Prefeitura objeto : resultados) {
+            Vector linha = new Vector();
+            
+            //definindo o conteúdo da tabela
+            linha.add(objeto.getCodigo());
+            linha.add(objeto.getFuncionarios());
+            linha.add(objeto.getEndereco());
+            linha.add(objeto.getNome());
+            modelo.addRow(linha); //adicionando a linha na tabela
+        }
+        tabela.setModel(modelo);
+    }
+    
+    public static void atualizaCampos(ManutencaoPrefeitura man, int pk){ 
+        Prefeitura objeto = DaoPrefeitura.consultar(pk);
+        //Definindo os valores do campo na tela (um para cada atributo/campo)
+        man.jtfCodigo.setText(objeto.getCodigo().toString());
+        man.jtfFuncionarios.setText(objeto.getFuncionarios().toString());
+        man.jtfEndereco.setText(objeto.getEndereco());
+        man.jtfNome.setText(objeto.getNome());
+        
+        man.jtfCodigo.setEnabled(false); //desabilitando o campo código
+        man.btnAdicionar.setEnabled(false); //desabilitando o botão adicionar
     }
     
 }
